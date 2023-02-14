@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+
+<div style="text-align: center; margin-top: 18%">
+
+    <button th:onclick="|window.location.href='/viewWorkouts'|" style="height: 50px; border-radius: 12px; border-style: solid; border-width: 1px">View Workouts</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button th:onclick="|window.location.href='/newWorkout'|" style="height: 50px; border-radius: 12px; border-style: solid; border-width: 1px">Create New Workout</button>
+
+
+</div>
+
+
+</body>
+</html>

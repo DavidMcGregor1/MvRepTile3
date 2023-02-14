@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Workout</title>
+</head>
+
+<style>
+
+
+    .hidden {
+        display: none;
+    }
+    .rep {
+        margin-left: 20%;
+
+    }
+
+
+   #reps {
+    margin-top: 10px;
+   }
+
+    #bob {
+        grid-column: 2 / 3;
+    }
+
+</style>
+
+<body>
+
+<header>
+
+</header>
+
+
+<main style="text-align: center; margin-top: 10%">
+
+
+    <label for="name">Title:</label><br>
+    <input type="text" id="name" name="name"><br>
+
+
+
+    <button id="addButton" style="margin-top: 10px; margin-bottom: 30px;">Add Exercise</button>
+
+
+
+    <div id="dropDowns" class="hidden">
+
+
+
+        <div id="bob">
+
+            <div style="padding-top: 20px;" id="absDropDown">
+
+                <label for="abs">Abs: </label>
+                <select name="abs" id="abs">
+                    <option disabled selected value> -- select an exercise -- </option>
+                    <option value="crunches">crunches</option>
+                    <option value="plank">plank</option>
+                    <option value="ab rollout">ab rollout</option>
+                </select>
+                <br>
+                <br>
+
+            </div>
+
+
+
+            <label for="back">Back: </label>
+            <select name="back" id="back">
+                <option disabled selected value> -- select an exercise -- </option>
+                <option value="lat pulldown">lat pulldown</option>
+                <option value="deadlifts">deadlifts</option>
+                <option value="dumbbell row">dumbbell row</option>
+            </select>
+            <br>
+            <br>
+            <label for="biceps">Biceps: </label>
+            <select name="biceps" id="biceps">
+                <option disabled selected value> -- select an exercise -- </option>
+                <option value="bicep curls">bicep curls</option>
+                <option value="hammer curls">hammer curls</option>
+                <option value="Ez bar curls">Ez bar culrs</option>
+            </select>
+            <br>
+            <br>
+            <label for="Chest">Chest: </label>
+            <select name="Chest" id="Chest">
+                <option disabled selected value> -- select an exercise -- </option>
+                <option value="Barbell bench press">barbell bench press</option>
+                <option value="Dumbbell bench press">Dumbbell bench press</option>
+                <option value="Cable flys">Cable flys</option>
+            </select>
+            <br>
+            <br>
+            <label for="Legs">Legs: </label>
+            <select name="Legs" id="Legs">
+                <option disabled selected value> -- select an exercise -- </option>
+                <option value="Squats">Squats</option>
+                <option value="Leg press">Leg press</option>
+                <option value="Leg extension">Leg extension</option>
+            </select>
+            <br>
+            <br>
+            <label for="Shoulders">Shoulders: </label>
+            <select name="Shoulders" id="Shoulders">
+                <option disabled selected value> -- select an exercise -- </option>
+                <option value="Shoulder press">Shoulder press</option>
+                <option value="Lateral raises">Lateral raises</option>
+                <option value="Rear delt flys">Rear delt flys</option>
+            </select>
+            <br>
+            <br>
+            <label for="Triceps">Triceps: </label>
+            <select name="Tricpes" id="Tricpes">
+                <option disabled selected value> -- select an exercise -- </option>
+                <option value="Rope pushdowns">Rope pushdowns</option>
+                <option value="Skull crushers">Skull crushers</option>
+                <option value="Close grip bench press">Close grip bench press</option>
+            </select>
+            <br>
+            <br>
+            <button id="closeButton">Close</button>
+
+            <div id="reps">
+                <label for="reps">Reps:</label><br>
+                <input style="width: 30px;" type="text" id="reps" name="reps"><br>
+            </div>
+
+            <div id="weight">
+                <label for="weight">Weight:</label><br>
+                <input style="width: 30px;" type="text" id="Weight" name="weight"><br>
+            </div>
+
+            <button style="margin-top: 10px;" id="add">Add</button>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+</main>
+
+<footer>
+
+</footer>
+
+<script>
+        let addExerciseButton = document.getElementById("addButton");
+        let dropDowns = document.getElementById("dropDowns")
+        let closeButton = document.getElementById("closeButton")
+        addExerciseButton.addEventListener('click', () => {
+            dropDowns.classList.remove("hidden");
+            addExerciseButton.classList.add("hidden");
+        })
+
+        closeButton.addEventListener("click", () => {
+            dropDowns.classList.add("hidden");
+            addExerciseButton.classList.remove("hidden");
+        })
+
+
+    </script>
+
+
+</body>
+</html>
