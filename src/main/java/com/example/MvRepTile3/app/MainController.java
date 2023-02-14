@@ -45,7 +45,7 @@ import java.util.*;
         @GetMapping("/viewWorkouts")
             public String viewWorkouts() {
                 System.out.println("arrived at home page");
-                return "viewWorkouts";.
+                return "viewWorkouts";
         }
 
 
