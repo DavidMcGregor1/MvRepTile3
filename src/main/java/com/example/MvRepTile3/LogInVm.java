@@ -12,6 +12,7 @@ public class LogInVm {
         id = theId;
     }
 
+    public String test = "test";
     public long id;
     public String username;
     public String password;
