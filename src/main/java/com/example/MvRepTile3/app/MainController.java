@@ -2,6 +2,7 @@ package com.example.MvRepTile3.app;
 
 
 import com.example.MvRepTile3.LogInVm;
+import org.apache.catalina.User;
 import org.hibernate.tool.schema.SourceType;
 import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import java.security.spec.KeySpec;
+import javax.crypto.SecretKeyFactory;
+import java.security.spec.InvalidKeySpecException;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
+import java.security.SecureRandom;
 import java.util.*;
+
 
 
 @Controller
@@ -103,17 +120,75 @@ import java.util.*;
         return submittedExercise;
     }
 
+
+    //    !---------- Add User API ----------!
+    private static final byte[] SALT = {
+            (byte) 0x1, (byte) 0x2, (byte) 0x3, (byte) 0x4,(byte) 0x5, (byte) 0x6, (byte) 0x7, (byte) 0x8,
+    };
+    private static String base64Encode(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
+    }
+    private String encrypt(String property) throws GeneralSecurityException, UnsupportedEncodingException {
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
+        String bob = "bob";
+
+        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(bob.toCharArray()));
+        Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
+        pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
+        return base64Encode(pbeCipher.doFinal(property.getBytes("UTF-8")));
+    }
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    @PostMapping(path = "/apiAddUser", consumes = "application/json", produces = "application/json")
+    public NewUserVm addUser(@RequestBody NewUserVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
+        System.out.println("starting");
+        String encryptedPassword = encrypt(submittedUser.newPassword);
+
+        Users newUser = new Users();
+        newUser.setUsername(submittedUser.newUsername);
+        newUser.setPassword(encryptedPassword);
+
+        System.out.println(">" + encryptedPassword);
+
+//        SecureRandom random = new SecureRandom();
+//        byte[] salt = new byte[16];
+//        random.nextBytes(salt);
+//        KeySpec spec = new PBEKeySpec("password".toCharArray(), salt, 65536, 128);
+//        SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+//        byte[] hash = f.generateSecret(spec).getEncoded();
+//        Base64.Encoder enc = Base64.getEncoder();
+//        System.out.printf("salt: %s%n", enc.encodeToString(salt));
+//        System.out.printf("hash: %s%n", enc.encodeToString(hash));
+
+
+
+
+
+
+        System.out.println("submitted user: ]"+submittedUser.newUsername+"[");
+        System.out.println("submitted password: ]"+submittedUser.newPassword+"[");
+
+        repo.save(newUser);
+
+        return submittedUser;
+    }
+
+
+
 //        !---------- LogIn API ----------!
 
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/apiLogIn", consumes = "application/json", produces = "application/json")
-    public boolean logIn(@RequestBody LogInVm newEntry) {
+    public boolean logIn(@RequestBody LogInVm newEntry) throws GeneralSecurityException, UnsupportedEncodingException {
         System.out.println("login API called");
 
         LogInVm newLogInVm = new LogInVm(newEntry.username, newEntry.password);
 
         List<Users> allUserEntries = repo.findAll();
+
+        String passwordToCheck = encrypt(newEntry.password);
 
 
         for (int i = 0; i < allUserEntries.stream().count(); i++) {
@@ -131,9 +206,9 @@ import java.util.*;
             if (a != null) {
 
                 System.out.println(a.username.equals(newLogInVm.username));
-                System.out.println(a.password.equals(newLogInVm.password));
+                System.out.println(a.password.equals(passwordToCheck));
 
-                if ((a.username.equals(newLogInVm.username)) && (a.password.equals(newLogInVm.password))) {
+                if ((a.username.equals(newLogInVm.username)) && (a.password.equals(passwordToCheck))) {
                     System.out.println("Successfully logged in");
                     newLogInVm.succeeded = true;
                     break;
