@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,25 +8,72 @@
 </head>
 <body>
 
-<div style="text-align: center; margin-top: 20%">
+<div id="login" style="text-align: center; margin-top: 20%">
     <h2>Please Login</h2>
     <label for="username">Username:</label>
-    <input type="text" placeholder="Username">
+    <input type="text" id="usernameId" placeholder="Username">
     <br>
     <br>
     <label for="password">Password:</label>
-    <input type="text" placeholder="Password">
+    <input type="text" id="passwordId" placeholder="Password">
     <br>
     <br>
     <br>
-
-    <button style="width: 5%;">Login</button>
-
+    <button id="log" style="width: 5%;">Login</button>
 
 </div>
 
 
 <div id="id" class="class"></div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script>
+
+
+$(document).ready(function(){
+    $("#log").click(function() {
+        console.log("function called");
+
+        var test = JSON.stringify({
+        "username": $("#usernameId").val() ,
+        "password": $("#passwordId").val() ,
+        });
+
+        console.log("test object updated with uname and pass")
+
+
+        $.ajax({
+            url: "/apiLogIn",
+            data: test,
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            success : function(serverResponse) {
+                        console.log("in ajax call")
+                        console.log("test:" + test)
+                        console.log(serverResponse);
+
+                        if(serverResponse == true) {
+                        alert("logged in")
+                        console.log("login success")
+                            window.location.replace("/home");
+                        } else {
+                        alert("failed to log in")
+                        console.log("login failed")
+                        }
+
+                       },
+        });
+
+    });
+
+
+
+});
+
+const logInForm = document.getElementById("login");
+
+
+</script>
 </body>
 </html>
