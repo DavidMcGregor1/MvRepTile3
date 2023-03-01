@@ -2,36 +2,23 @@ package com.example.MvRepTile3.app;
 
 
 import com.example.MvRepTile3.LogInVm;
-import org.apache.catalina.User;
-import org.hibernate.tool.schema.SourceType;
-import org.hibernate.tool.schema.internal.exec.ScriptTargetOutputToFile;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import java.security.spec.KeySpec;
 import javax.crypto.SecretKeyFactory;
-import java.security.spec.InvalidKeySpecException;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import java.security.SecureRandom;
 import java.util.*;
 
 
@@ -39,12 +26,12 @@ import java.util.*;
 @Controller
     public class MainController {
     public MainController(UsersRepository r, ExercisesRepository p) {
-        repo = r;
-        repo2 = p;
+        repositoryUsers = r;
+        repositoryExercises = p;
     }
 
-    private UsersRepository repo;
-    private ExercisesRepository repo2;
+    private UsersRepository repositoryUsers;
+    private ExercisesRepository repositoryExercises;
 
 
     @GetMapping("/newWorkout")
@@ -87,7 +74,7 @@ import java.util.*;
     @GetMapping("/getUsers")
     public String getUsers() {
 
-        List<Users> allDbEntries = repo.findAll();
+        List<Users> allDbEntries = repositoryUsers.findAll();
 
         String result = "here >";
 
@@ -114,7 +101,7 @@ import java.util.*;
         Exercises newDataBaseExercise = new Exercises();
         newDataBaseExercise.setExerciseName(submittedExercise.exerciseName);
 
-        repo2.save(newDataBaseExercise);
+        repositoryExercises.save(newDataBaseExercise);
 
         return submittedExercise;
     }
@@ -156,13 +143,31 @@ import java.util.*;
         System.out.println("submitted user: ]"+submittedUser.newUsername+"[");
         System.out.println("submitted password: ]"+submittedUser.newPassword+"[");
 
-        repo.save(newUser);
+        repositoryUsers.save(newUser);
 
         return submittedUser;
     }
 
+    //        !---------- Delete Exercise API ----------!
 
-//        !---------- LogIn API ----------!
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    @DeleteMapping(path = "/apiDeleteExercise", consumes = "application/json", produces = "application/json")
+    public boolean deleteExercise(@RequestBody ExercisesVm exerciseIdToDelete) throws GeneralSecurityException, UnsupportedEncodingException {
+        System.out.println("starting");
+
+         repositoryExercises.deleteById(exerciseIdToDelete.id);
+            return true;
+    }
+
+
+
+
+
+
+
+    //        !---------- LogIn API ----------!
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/apiLogIn", consumes = "application/json", produces = "application/json")
@@ -171,10 +176,9 @@ import java.util.*;
 
         LogInVm newLogInVm = new LogInVm(newEntry.username, newEntry.password);
 
-        List<Users> allUserEntries = repo.findAll();
+        List<Users> allUserEntries = repositoryUsers.findAll();
 
         String passwordToCheck = encrypt(newEntry.password);
-
 
         for (int i = 0; i < allUserEntries.stream().count(); i++) {
             Users a = allUserEntries.get(i);
