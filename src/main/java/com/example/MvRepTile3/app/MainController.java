@@ -89,7 +89,7 @@ import java.util.*;
 
         List<Users> allDbEntries = repo.findAll();
 
-        String result = "bob ";
+        String result = "here >";
 
         for (int i = 0; i < allDbEntries.stream().count(); i++) {
             Users a = allDbEntries.get(i);
@@ -97,7 +97,6 @@ import java.util.*;
                 result = result + a.getEmail();
             }
         }
-
 
         System.out.println("returned hello");
         return result;
@@ -121,7 +120,7 @@ import java.util.*;
     }
 
 
-    //    !---------- Add User API ----------!
+    //    !---------- Hashing Algorithm ----------!
     private static final byte[] SALT = {
             (byte) 0x1, (byte) 0x2, (byte) 0x3, (byte) 0x4,(byte) 0x5, (byte) 0x6, (byte) 0x7, (byte) 0x8,
     };
@@ -130,14 +129,16 @@ import java.util.*;
     }
     private String encrypt(String property) throws GeneralSecurityException, UnsupportedEncodingException {
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
-        String bob = "bob";
+        String theSecret = "bob";
 
-        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(bob.toCharArray()));
+        SecretKey key = keyFactory.generateSecret(new PBEKeySpec(theSecret.toCharArray()));
         Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
         pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
         return base64Encode(pbeCipher.doFinal(property.getBytes("UTF-8")));
     }
 
+
+    //    !---------- Add User API ----------!
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/apiAddUser", consumes = "application/json", produces = "application/json")
@@ -149,21 +150,7 @@ import java.util.*;
         newUser.setUsername(submittedUser.newUsername);
         newUser.setPassword(encryptedPassword);
 
-        System.out.println(">" + encryptedPassword);
-
-//        SecureRandom random = new SecureRandom();
-//        byte[] salt = new byte[16];
-//        random.nextBytes(salt);
-//        KeySpec spec = new PBEKeySpec("password".toCharArray(), salt, 65536, 128);
-//        SecretKeyFactory f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
-//        byte[] hash = f.generateSecret(spec).getEncoded();
-//        Base64.Encoder enc = Base64.getEncoder();
-//        System.out.printf("salt: %s%n", enc.encodeToString(salt));
-//        System.out.printf("hash: %s%n", enc.encodeToString(hash));
-
-
-
-
+        System.out.println("encrypted password >" + " " + encryptedPassword);
 
 
         System.out.println("submitted user: ]"+submittedUser.newUsername+"[");
@@ -175,9 +162,7 @@ import java.util.*;
     }
 
 
-
 //        !---------- LogIn API ----------!
-
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/apiLogIn", consumes = "application/json", produces = "application/json")
@@ -200,7 +185,6 @@ import java.util.*;
 
             System.out.println("inputted username = " + newLogInVm.username);
             System.out.println("inputted pass = " + newLogInVm.password);
-
 
 
             if (a != null) {
@@ -226,18 +210,6 @@ import java.util.*;
         return newLogInVm.succeeded;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
