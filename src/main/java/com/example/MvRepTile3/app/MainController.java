@@ -25,10 +25,10 @@ import java.util.*;
 
 @Controller
     public class MainController {
-    public MainController(UsersRepository r, ExercisesRepository p, AuthorisationRepository q) {
-        repositoryUsers = r;
-        repositoryExercises = p;
-        repositoryAuthorisation = q;
+    public MainController(UsersRepository u, ExercisesRepository e, AuthorisationRepository au) {
+        repositoryUsers = u;
+        repositoryExercises = e;
+        repositoryAuthorisation = au;
     }
 
     private UsersRepository repositoryUsers;
@@ -71,6 +71,10 @@ import java.util.*;
         return "passwords";
     }
 
+
+
+
+    //    !---------- Get Users API    >   Reading From DataBase   ----------!
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @GetMapping("/getUsers")
@@ -92,7 +96,9 @@ import java.util.*;
     }
 
 
-//    !---------- Add Exercise API ----------!
+
+
+//    !---------- Add Exercise API    >   Posting To DataBase   ----------!
 
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -107,6 +113,8 @@ import java.util.*;
 
         return submittedExercise;
     }
+
+
 
 
     //    !---------- Hashing Algorithm ----------!
@@ -128,6 +136,10 @@ import java.util.*;
         return base64Encode(pbeCipher.doFinal(stringToEncrypt.getBytes("UTF-8")));
     }
 
+
+
+
+    //    !---------- Compare Passed In User To User In The DataBase Method ----------!
     private Users getUserForUsernameAndPasswordCheck(String username, String password) throws GeneralSecurityException, UnsupportedEncodingException {
         LogInVm newLogInVm = new LogInVm(username, password);
 
@@ -139,14 +151,6 @@ import java.util.*;
 
         for (int i = 0; i < allUserEntries.stream().count(); i++) {
             Users a = allUserEntries.get(i);
-
-//            System.out.println("i = " + i);
-//            System.out.println("database.username = " + a.username);
-//            System.out.println("database.password = ]" + a.password+"[");
-//
-//            System.out.println("inputted username = " + newLogInVm.username);
-//            System.out.println("inputted pass = " + newLogInVm.password);
-
 
 
             if (a != null) {
@@ -177,8 +181,7 @@ import java.util.*;
 
 
 
-    //    !---------- Register API ----------!
-
+    //    !---------- Register API    >   Authorisation   ----------!
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
@@ -202,13 +205,12 @@ import java.util.*;
         newRegisterResponse.id = 1;
         newRegisterResponse.succeeded =  true;
 
-//        return newRegisterResponse;
 
 
 
         if (newRegisterResponse.succeeded = true) {
 
-           
+
             Authorisation newAuth = new Authorisation();
 
             newAuth.setAuthToken(newRegisterResponse.authToken);
@@ -231,6 +233,7 @@ import java.util.*;
 
 
 
+//    !---------- Add User API   >   Posting To DataBase    ----------!
 
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -253,10 +256,11 @@ import java.util.*;
 
         return submittedUser;
     }
-    //    !---------- Add User API ----------!
 
-    //        !---------- Delete Exercise API ----------!
 
+
+
+    //        !---------- Delete Exercise API   >    Deleting From DataBase   ----------!
 
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -268,6 +272,10 @@ import java.util.*;
             return true;
     }
 
+
+
+
+//    !---------- Edit User API   >   Edit Entry In DataBase  ----------!
 
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
@@ -301,13 +309,7 @@ import java.util.*;
 
 
 
-
-
-
-
-
-
-    //        !---------- LogIn API ----------!
+    //        !---------- Frontend LogIn API ----------!
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/apiLogIn", consumes = "application/json", produces = "application/json")
