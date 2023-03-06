@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Entity
 public class Exercises {
 
-    private long id;
+    private int id;
     private String exerciseName;
 
 
@@ -28,11 +28,11 @@ public class Exercises {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

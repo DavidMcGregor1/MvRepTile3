@@ -12,9 +12,9 @@ import javax.persistence.Table;
 @Entity
 public class Session {
 
-    private long id;
+    private int id;
     public String sessionName;
-    public long exerciseId;
+    public int exerciseId;
     public float weight;
     public int reps;
 
@@ -27,7 +27,7 @@ public class Session {
 
     }
 
-    public Session(String SessionName, long exerciseId, float weight, int reps) {
+    public Session(String SessionName, int exerciseId, float weight, int reps) {
         this.sessionName = sessionName;
         this.exerciseId = exerciseId;
         this.weight = weight;
@@ -36,10 +36,10 @@ public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public long getId() {
+    public int getId() {
         return id;
     }
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -48,8 +48,8 @@ public class Session {
     public void setSessionName(String sessionName) {this.sessionName = sessionName;}
 
     @Column(name = "exerciseId", nullable = false)
-    public long getExerciseId(){return exerciseId;}
-    public void setExerciseId(long exerciseId) {this.exerciseId = exerciseId;}
+    public int getExerciseId(){return exerciseId;}
+    public void setExerciseId(int exerciseId) {this.exerciseId = exerciseId;}
 
     @Column(name = "weight", nullable = true)
     public float getWeight(){return weight;}

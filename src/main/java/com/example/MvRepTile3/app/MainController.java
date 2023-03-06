@@ -25,13 +25,15 @@ import java.util.*;
 
 @Controller
     public class MainController {
-    public MainController(UsersRepository r, ExercisesRepository p) {
+    public MainController(UsersRepository r, ExercisesRepository p, AuthorisationRepository q) {
         repositoryUsers = r;
         repositoryExercises = p;
+        repositoryAuthorisation = q;
     }
 
     private UsersRepository repositoryUsers;
     private ExercisesRepository repositoryExercises;
+    private AuthorisationRepository repositoryAuthorisation;
 
 
     @GetMapping("/newWorkout")
@@ -114,39 +116,144 @@ import java.util.*;
     private static String base64Encode(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
     }
-    private String encrypt(String property) throws GeneralSecurityException, UnsupportedEncodingException {
+    private String encrypt(String stringToEncrypt) throws GeneralSecurityException, UnsupportedEncodingException {
         SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEWithMD5AndDES");
         String theSecret = "bob";
+
+        System.out.println("String to encrypt: >> " + stringToEncrypt);
 
         SecretKey key = keyFactory.generateSecret(new PBEKeySpec(theSecret.toCharArray()));
         Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
         pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
-        return base64Encode(pbeCipher.doFinal(property.getBytes("UTF-8")));
+        return base64Encode(pbeCipher.doFinal(stringToEncrypt.getBytes("UTF-8")));
+    }
+
+    private Users getUserForUsernameAndPasswordCheck(String username, String password) throws GeneralSecurityException, UnsupportedEncodingException {
+        LogInVm newLogInVm = new LogInVm(username, password);
+
+        List<Users> allUserEntries = repositoryUsers.findAll();
+
+        String passwordToCheck = encrypt(password);
+
+        Users result = null;
+
+        for (int i = 0; i < allUserEntries.stream().count(); i++) {
+            Users a = allUserEntries.get(i);
+
+//            System.out.println("i = " + i);
+//            System.out.println("database.username = " + a.username);
+//            System.out.println("database.password = ]" + a.password+"[");
+//
+//            System.out.println("inputted username = " + newLogInVm.username);
+//            System.out.println("inputted pass = " + newLogInVm.password);
+
+
+
+            if (a != null) {
+
+                System.out.println(a.username.equals(newLogInVm.username));
+                System.out.println(a.password.equals(passwordToCheck));
+
+                if ((a.username.equals(newLogInVm.username)) && (a.password.equals(passwordToCheck))) {
+                    System.out.println("Successfully logged in");
+                    newLogInVm.succeeded = true;
+                    result = a;
+
+                    break;
+
+                } else {
+                    System.out.println("NO MATCH");
+                    newLogInVm.succeeded = false;
+
+                }
+
+            }
+
+        }
+
+        return result;
+
     }
 
 
-    //    !---------- Add User API ----------!
+
+    //    !---------- Register API ----------!
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    @PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
+    public RegisterResponseVm register(@RequestBody RegisterUserVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
+        System.out.println("register API called");
+
+        System.out.println("submitted user name >> " + submittedUser.registerUsername);
+        System.out.println("submitted user password >> " + submittedUser.registerPassword);
+        System.out.println("submitted user role name >> " + submittedUser.RoleName);
+
+        RegisterResponseVm newRegisterResponse = new RegisterResponseVm();
+
+        String authToken1 = "authToken1";
+        String roleNameA = "Admin";
+
+       Users result = getUserForUsernameAndPasswordCheck(submittedUser.registerUsername, submittedUser.registerPassword);
+
+
+        newRegisterResponse.RoleName = roleNameA;
+        newRegisterResponse.authToken = authToken1;
+        newRegisterResponse.id = 1;
+        newRegisterResponse.succeeded =  true;
+
+//        return newRegisterResponse;
+
+
+
+        if (newRegisterResponse.succeeded = true) {
+
+           
+            Authorisation newAuth = new Authorisation();
+
+            newAuth.setAuthToken(newRegisterResponse.authToken);
+
+            newAuth.setRoleName(newRegisterResponse.RoleName);
+            newAuth.setUserId(result.getId());
+
+
+            repositoryAuthorisation.save(newAuth);
+
+            System.out.println("Saved to repo");
+
+        }
+
+        System.out.println("After if statement");
+
+        return newRegisterResponse;
+    }
+
+
+
+
+
     @ResponseStatus(value = HttpStatus.OK)
     @ResponseBody
     @PostMapping(path = "/apiAddUser", consumes = "application/json", produces = "application/json")
-    public NewUserVm addUser(@RequestBody NewUserVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
+    public UsersVm addUser(@RequestBody UsersVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
         System.out.println("starting");
-        String encryptedPassword = encrypt(submittedUser.newPassword);
+        String encryptedPassword = encrypt(submittedUser.password);
 
         Users newUser = new Users();
-        newUser.setUsername(submittedUser.newUsername);
+        newUser.setUsername(submittedUser.username);
         newUser.setPassword(encryptedPassword);
 
         System.out.println("encrypted password >" + " " + encryptedPassword);
 
 
-        System.out.println("submitted user: ]"+submittedUser.newUsername+"[");
-        System.out.println("submitted password: ]"+submittedUser.newPassword+"[");
+        System.out.println("submitted user: ]"+submittedUser.username+"[");
+        System.out.println("submitted password: ]"+submittedUser.password +"[");
 
         repositoryUsers.save(newUser);
 
         return submittedUser;
     }
+    //    !---------- Add User API ----------!
 
     //        !---------- Delete Exercise API ----------!
 
@@ -160,6 +267,39 @@ import java.util.*;
          repositoryExercises.deleteById(exerciseIdToDelete.id);
             return true;
     }
+
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    @PutMapping(path = "/apiEditUser", consumes = "application/json", produces = "application/json")
+    public boolean editUser(@RequestBody UsersVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
+        System.out.println("starting");
+
+      Optional<Users> userToUpdate = repositoryUsers.findById(submittedUser.userId);
+
+        System.out.println("id:" + submittedUser.userId);
+
+      if(userToUpdate.isPresent()) {
+
+          System.out.println("the object has been found from the database");
+
+          if (submittedUser.username != null) {
+              userToUpdate.get().username = submittedUser.username;
+          }
+          if (submittedUser.password != null) {
+              userToUpdate.get().password = submittedUser.password;
+          }
+
+          repositoryUsers.save(userToUpdate.get());
+      } else {
+          System.out.println("The object has not been found from the database");
+      }
+
+        return true;
+    }
+
+
+
 
 
 
