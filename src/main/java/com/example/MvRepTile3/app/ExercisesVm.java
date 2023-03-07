@@ -14,6 +14,6 @@ public class ExercisesVm {
     public ExercisesVm(int theId) {
         id = theId;
     }
-    public long id;
+    public int id;
     public String exerciseName;
 }

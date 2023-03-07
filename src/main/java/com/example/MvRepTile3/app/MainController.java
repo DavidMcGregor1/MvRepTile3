@@ -82,12 +82,12 @@ import java.util.*;
 
         List<Users> allDbEntries = repositoryUsers.findAll();
 
-        String result = "here >";
+        String result = "Usernames --> ";
 
         for (int i = 0; i < allDbEntries.stream().count(); i++) {
             Users a = allDbEntries.get(i);
             if (a != null) {
-                result = result + a.getEmail();
+                result = result + a.getUsername() + ", ";
             }
         }
 
@@ -297,6 +297,10 @@ import java.util.*;
           if (submittedUser.password != null) {
               userToUpdate.get().password = submittedUser.password;
           }
+          if (submittedUser.email != null) {
+              userToUpdate.get().email = submittedUser.email;
+          }
+
 
           repositoryUsers.save(userToUpdate.get());
       } else {

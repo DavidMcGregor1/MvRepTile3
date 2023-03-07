@@ -3,9 +3,10 @@ package com.example.MvRepTile3.app;
 public class UsersVm {
 
 
-    public UsersVm(String theNewUsername, String theNewPassword) {
+    public UsersVm(String theNewUsername, String theNewPassword, String theNewEmail) {
         username = theNewUsername;
         password = theNewPassword;
+        email = theNewEmail;
     }
 
 
@@ -17,8 +18,9 @@ public class UsersVm {
         userId = theNewUserId;
     }
 
-    public long userId;
+    public int userId;
     public String username;
     public String password;
+    public String email;
 
 }
