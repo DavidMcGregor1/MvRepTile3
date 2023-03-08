@@ -104,7 +104,7 @@ import java.util.*;
     @ResponseBody
     @PostMapping(path = "/apiAddExercise", consumes = "application/json", produces = "application/json")
     public ExercisesVm addExercise(@RequestBody ExercisesVm submittedExercise) {
-        System.out.println("starting");
+        System.out.println("Add Exercise API Called");
 
         Exercises newDataBaseExercise = new Exercises();
         newDataBaseExercise.setExerciseName(submittedExercise.exerciseName);
@@ -239,7 +239,7 @@ import java.util.*;
     @ResponseBody
     @PostMapping(path = "/apiAddUser", consumes = "application/json", produces = "application/json")
     public UsersVm addUser(@RequestBody UsersVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
-        System.out.println("starting");
+        System.out.println("Add User API Called");
         String encryptedPassword = encrypt(submittedUser.password);
 
         Users newUser = new Users();
@@ -266,9 +266,9 @@ import java.util.*;
     @ResponseBody
     @DeleteMapping(path = "/apiDeleteExercise", consumes = "application/json", produces = "application/json")
     public boolean deleteExercise(@RequestBody ExercisesVm exerciseIdToDelete) throws GeneralSecurityException, UnsupportedEncodingException {
-        System.out.println("starting");
+        System.out.println("Delete Exercise API Called");
 
-
+        System.out.println("Inputted Id To Delete >>> " + exerciseIdToDelete.id);
 
          repositoryExercises.deleteById(exerciseIdToDelete.id);
             return true;
@@ -283,8 +283,7 @@ import java.util.*;
     public boolean deleteUser(@RequestBody UsersVm userIdToDelete) throws GeneralSecurityException, UnsupportedEncodingException {
         System.out.println("Delete User API called");
 
-        System.out.println(".id >> " + userIdToDelete.userId);
-        System.out.println("UserIDToDelete >>" + userIdToDelete);
+        System.out.println("Inputted Id To Delete >>> " + userIdToDelete.userId);
 
         repositoryUsers.deleteById(userIdToDelete.userId);
         return true;
@@ -298,11 +297,11 @@ import java.util.*;
     @ResponseBody
     @PutMapping(path = "/apiEditUser", consumes = "application/json", produces = "application/json")
     public boolean editUser(@RequestBody UsersVm submittedUser) throws GeneralSecurityException, UnsupportedEncodingException {
-        System.out.println("starting");
+        System.out.println("Edit User API Called");
 
       Optional<Users> userToUpdate = repositoryUsers.findById(submittedUser.userId);
 
-        System.out.println("id:" + submittedUser.userId);
+        System.out.println("Inputted User Id >>> " + submittedUser.userId);
 
       if(userToUpdate.isPresent()) {
 
@@ -351,7 +350,7 @@ import java.util.*;
             System.out.println("database.password = ]" + a.password+"[");
 
             System.out.println("inputted username = " + newLogInVm.username);
-            System.out.println("inputted pass = " + newLogInVm.password);
+            System.out.println("inputted password = " + newLogInVm.password);
 
 
             if (a != null) {
