@@ -268,10 +268,27 @@ import java.util.*;
     public boolean deleteExercise(@RequestBody ExercisesVm exerciseIdToDelete) throws GeneralSecurityException, UnsupportedEncodingException {
         System.out.println("starting");
 
+
+
          repositoryExercises.deleteById(exerciseIdToDelete.id);
             return true;
     }
 
+
+    //        !---------- Delete User API   >    Deleting From DataBase   ----------!
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    @DeleteMapping(path = "/apiDeleteUser", consumes = "application/json", produces = "application/json")
+    public boolean deleteUser(@RequestBody UsersVm userIdToDelete) throws GeneralSecurityException, UnsupportedEncodingException {
+        System.out.println("Delete User API called");
+
+        System.out.println(".id >> " + userIdToDelete.userId);
+        System.out.println("UserIDToDelete >>" + userIdToDelete);
+
+        repositoryUsers.deleteById(userIdToDelete.userId);
+        return true;
+    }
 
 
 
